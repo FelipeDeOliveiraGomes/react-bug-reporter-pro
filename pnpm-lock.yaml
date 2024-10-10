@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   browser-http-request-listener:
-    specifier: 1.0.3
-    version: 1.0.3
+    specifier: 1.0.4
+    version: 1.0.4
   react:
     specifier: ^18.0.0
     version: 18.3.1
@@ -1251,8 +1251,8 @@ packages:
       fill-range: 7.1.1
     dev: true
 
-  /browser-http-request-listener@1.0.3:
-    resolution: {integrity: sha512-H5kQZooFgSA5YobiOC34KzunL/2+zdRMNqYO7y7iehUzIaJCix9+efxhqGy59aXPu3MB54siUJczAIE0D8S8YA==}
+  /browser-http-request-listener@1.0.4:
+    resolution: {integrity: sha512-mhHt7HZU1Gm1ad+6+Lve2mbXatApe0izgGchydlxXJRpGGrVnMymA0cmp8zgq/kd9bbBhTWOkEX71/091BRlsQ==}
     dev: false
 
   /browserslist@4.24.0:

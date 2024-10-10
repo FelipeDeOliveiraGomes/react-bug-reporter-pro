@@ -20,7 +20,7 @@
     "react-dom": "^18.0.0"
   },
   "dependencies": {
-    "browser-http-request-listener": "1.0.3"
+    "browser-http-request-listener": "1.0.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.11.1",
