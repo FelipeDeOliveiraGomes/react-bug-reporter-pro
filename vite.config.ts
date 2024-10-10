@@ -1,3 +1,4 @@
+import { resolve } from "path";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import dts from "vite-plugin-dts";
@@ -11,10 +12,10 @@ export default defineConfig({
   ],
   build: {
     lib: {
-      entry: "src/index.ts",
+      entry: resolve(__dirname, "lib/main.ts"),
       name: "ReactProBugReporter",
-      formats: ["es", "umd"],
-      fileName: (format) => `react-pro-bug-reporter.${format}.js`,
+      formats: ["es"],
+      fileName: "react-pro-bug-reporter",
     },
     rollupOptions: {
       external: ["react", "react-dom"],
