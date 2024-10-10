@@ -49,5 +49,6 @@
     ".": {
       "import": "./dist/react-pro-bug-reporter.js"
     }
-  }
+  },
+  "license": "MIT"
 }
