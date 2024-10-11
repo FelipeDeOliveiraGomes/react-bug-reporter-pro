@@ -4,11 +4,17 @@ import {
     RequestResponseModel,
 } from 'browser-http-request-listener'
 
+interface UploadFileParams<T> {
+    uploadUrl?: string
+    httpClient?: (fileEncoded: FormData) => Promise<T>
+    fileName?: string
+}
+
 interface UseHttpRecorderReturn {
     recording: boolean
     startRecording: () => void
     stopRecording: () => void
-    uploadFile: (uploadUrl: string, fileName: string) => Promise<boolean>
+    uploadFile: <T>(params: UploadFileParams<T>) => Promise<boolean | T>
     downloadFile: (fileName: string) => void
 }
 
@@ -38,34 +44,45 @@ function useHttpRecorder(): UseHttpRecorderReturn {
     }
 
     /**
-     * Uploads the recorded HTTP request log to a specified URL.
+     * Uploads the recorded HTTP request log to a specified URL or using a custom HTTP client.
      *
-     * @param {string} uploadUrl - The URL to upload the file to.
-     * @param {string} [fileName=`http-requests-log-${Date.now()}.txt`] - The name for the uploaded file.
-     * @returns {Promise<boolean>} - Returns true if the upload was successful, otherwise false.
+     * @template T
+     * @param {UploadFileParams<T>} params - An object containing:
+     *   - `uploadUrl` {string} - The URL to upload the file to.
+     *   - `httpClient` {function} - Optional custom HTTP client function.
+     *   - `fileName` {string} - Optional name for the uploaded file.
+     * @returns {Promise<boolean | T>} - Returns true if the upload was successful, or the return value from the custom HTTP client.
+     * @throws {Error} If there is no recorded data or if both `uploadUrl` and `httpClient` are not provided.
      */
-    const uploadFile = async (
-        uploadUrl: string,
-        fileName = `http-requests-log-${Date.now()}.txt`
-    ): Promise<boolean> => {
+    const uploadFile = async <T>({
+        uploadUrl,
+        httpClient,
+        fileName = `http-requests-log-${Date.now()}.txt`,
+    }: UploadFileParams<T>): Promise<boolean | T> => {
         if (!blob) throw new Error('There is no requests recorded yet')
+        if (!uploadUrl && !httpClient)
+            throw new Error('Missing upload URL or HTTP client')
 
         const formData = new FormData()
         formData.append('file', blob, fileName)
 
+        if (httpClient) {
+            return httpClient(formData)
+        }
+
         try {
-            const response = await fetch(uploadUrl, {
+            const response = await fetch(uploadUrl!, {
                 method: 'POST',
                 body: formData,
             })
 
             if (!response.ok) {
-                throw new Error('Error to upload the file')
+                throw new Error('Error uploading the file')
             }
 
             return true
         } catch (error) {
-            console.error('Error to upload the file', error)
+            console.error('Error uploading the file:', error)
             return false
         }
     }
@@ -74,11 +91,12 @@ function useHttpRecorder(): UseHttpRecorderReturn {
      * Downloads the recorded HTTP request log as a text file.
      *
      * @param {string} [fileName=`http-requests-log-${Date.now()}.txt`] - The name for the downloaded file.
+     * @throws {Error} If there is no recorded data available for download.
      */
-    const downloadFile = async (
-        fileName = `http-requests-log-${Date.now()}.txt`
-    ) => {
-        if (!blob) throw new Error('There is no requests recorded yet')
+    const downloadFile = (fileName = `http-requests-log-${Date.now()}.txt`) => {
+        if (!blob)
+            throw new Error('There is no recorded data available for download')
+
         const url = URL.createObjectURL(blob)
 
         const a = document.createElement('a')
