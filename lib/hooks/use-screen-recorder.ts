@@ -12,7 +12,7 @@ interface UseScreenRecorderReturn {
     startRecording: (audioEnabled?: boolean) => void
     stopRecording: () => void
     uploadFile: <T>(params: UploadVideoParams<T>) => Promise<boolean | T>
-    downloadFile: (fileName: string) => void
+    downloadFile: (fileName?: string) => void
     revokeUrl: () => void
 }
 

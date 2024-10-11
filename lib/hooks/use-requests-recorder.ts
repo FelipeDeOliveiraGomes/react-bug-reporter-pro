@@ -15,7 +15,7 @@ interface UseHttpRecorderReturn {
     startRecording: () => void
     stopRecording: () => void
     uploadFile: <T>(params: UploadFileParams<T>) => Promise<boolean | T>
-    downloadFile: (fileName: string) => void
+    downloadFile: (fileName?: string) => void
 }
 
 /**

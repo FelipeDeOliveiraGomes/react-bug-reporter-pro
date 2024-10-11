@@ -1,0 +1,149 @@
+/* to avoid conflicts with user vars */
+.react-bug-reporter-pro__tools-container, 
+.react-bug-reporter-pro__modal-overlay {
+    --primary-color: #7A1CAC;
+    --primary-color-dark: #2E073F;
+    --primary-color-light: #AD49E1;
+    --text-color-1: #EEEEEE;
+    --text-color-2: #686D76;
+    --text-color-3: #373A40
+}
+
+.react-bug-reporter-pro__tools-container {
+    position: absolute;
+    right: 1rem;
+    bottom: 1rem;
+    display: flex;
+    align-items: center;
+    flex-direction: row-reverse;
+    gap: .5rem;
+}
+
+.react-bug-reporter-pro__open-tools-btn {
+    position: relative;
+    border: none;
+    padding: 1rem; 
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: var(--text-color-1);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: 1.2rem;
+}
+
+.react-bug-reporter-pro__open-tools-btn:hover {
+    background-color:  var(--primary-color-dark);
+}
+
+.react-bug-reporter-pro__record-btn,
+.react-bug-reporter-pro__stop-btn {
+   display: flex;
+   align-items: center;
+   height: 2rem;
+   border: none;
+   border-radius: .2rem;
+   padding: 0 .5rem;
+   background-color:  var(--primary-color-light);
+   color: var(--text-color-1);
+   cursor: pointer;
+   gap: .25rem;
+}
+
+.react-bug-reporter-pro__record-btn:disabled,
+.react-bug-reporter-pro__stop-btn:disabled {
+    cursor: initial;
+    opacity: .6;
+} 
+
+.react-bug-reporter-pro__record-btn:hover,
+.react-bug-reporter-pro__stop-btn:hover {
+    background-color:  var(--primary-color);
+} 
+
+.react-bug-reporter-pro__modal-overlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 10;
+  background-color: #00000080;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.react-bug-reporter-pro__modal {
+    width: 35rem;
+    background-color: var(--text-color-1);
+    height: 35rem;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    padding: .75rem;
+    border: solid .1rem var(--primary-color);
+    border-radius: .5rem;
+}
+
+.react-bug-reporter-pro__close-modal-btn {
+    border: none;
+    width: max-content;
+    align-self: flex-end;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.react-bug-reporter-pro__video {
+    width: 100%;
+}
+
+.react-bug-reporter-pro__text-area {
+    width: 97%;
+    height: 90%;
+    resize: none;
+    border: solid .1rem var(--primary-color);
+    border-radius: .2rem;
+    padding: .5rem;
+    color: var(--text-color-2);
+}
+
+.react-bug-reporter-pro__text-area:focus {
+    outline: solid .1rem var(--primary-color-light);
+}
+
+.react-bug-reporter-pro__actions {
+    display: flex;
+    margin-left: auto;
+    flex-direction: row;
+    gap: .5rem;
+}
+
+.react-bug-reporter-pro__cancel-btn,
+.react-bug-reporter-pro__upload-btn,
+.react-bug-reporter-pro__donwload-btn {
+    padding: .5rem;
+    cursor: pointer;
+    border-radius: .2rem;
+    border: none;
+}
+
+.react-bug-reporter-pro__cancel-btn {
+    background-color: transparent;
+    color: var(--primary-color-light);
+    border: solid .1rem var(--primary-color-light);
+    font-weight: bold;
+}
+
+.react-bug-reporter-pro__upload-btn {
+    background-color: var(--primary-color);
+    color: var(--text-color-1);
+    font-weight: bold;
+}
+
+.react-bug-reporter-pro__donwload-btn {
+    background-color: var(--primary-color-dark);
+    color: var(--text-color-1);
+    font-weight: bold;
+}

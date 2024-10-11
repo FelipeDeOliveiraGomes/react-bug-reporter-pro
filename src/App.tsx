@@ -1,5 +1,9 @@
 import { useState } from 'react'
-import { useHttpRecorder, useScreenRecorder } from '../lib'
+import {
+    ReactBugReporterProWrapper,
+    useHttpRecorder,
+    useScreenRecorder,
+} from '../lib'
 
 const App: React.FC = () => {
     const [counter, setCounter] = useState(0)
@@ -32,6 +36,8 @@ const App: React.FC = () => {
                 Increment counter
             </button>
             <div>{counter}</div>
+
+            <ReactBugReporterProWrapper />
         </section>
     )
 }
