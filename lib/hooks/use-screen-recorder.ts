@@ -126,11 +126,12 @@ function useScreenRecorder(): UseScreenRecorderReturn {
      *
      * @param {string} [fileName] - Optional file name for the saved video.
      */
-    const stopRecording = (fileName = makeTimeStampedFileName()) => {
+    const stopRecording = (fileName?: string) => {
         if (!mediaRecorderRef.current) return
+        if (fileName) fileName = fileName += '.webm'
 
         mediaRecorderRef.current.stop()
-        setFileNameState(fileName)
+        setFileNameState(fileName || makeTimeStampedFileName())
         setRecording(false)
 
         if (mediaStream) {
