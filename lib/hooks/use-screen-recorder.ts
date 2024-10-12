@@ -13,16 +13,16 @@ interface UseScreenRecorderReturn {
 }
 
 /**
- * Custom hook to record the screen, upload the recorded video, download it, and manage the object URL.
+ * Custom hook to record the screen, manage the recording as a downloadable/uploadable video file, and control the object URL lifecycle.
  *
  * @returns {UseScreenRecorderReturn} - An object containing:
- * - `recording`: A boolean indicating if the recording is in progress.
- * - `localVideoUrl`: The local URL of the recorded video to allow preview, or null if not available.
- * - `startRecording`: Function to start recording the screen.
- * - `stopRecording`: Function to stop the recording and save the video data.
- * - `uploadFile`: Function to upload the video file to a specified server URL or using a custom HTTP client.
- * - `downloadFile`: Function to download the video file to the user's device.
- * - `revokeUrl`: Function to revoke the object URL to release memory.
+ * - `recording`: Boolean indicating if the screen recording is active.
+ * - `localVideoUrl`: String URL for the recorded video, allowing for playback, or null if not available.
+ * - `startRecording`: Function to initiate the screen recording, with optional audio capture.
+ * - `stopRecording`: Function to end the recording and store the video data.
+ * - `uploadFile`: Function to upload the recorded video using a custom callback.
+ * - `downloadFile`: Function to download the recorded video file.
+ * - `revokeUrl`: Function to revoke the object URL to release resources.
  */
 function useScreenRecorder(): UseScreenRecorderReturn {
     const [recording, setRecording] = useState(false)
@@ -39,15 +39,13 @@ function useScreenRecorder(): UseScreenRecorderReturn {
     }
 
     /**
-     * Uploads the recorded video file to a specified URL or using a custom HTTP client.
+     * Uploads the recorded video file using a custom callback function.
+     * Sends the video data as a FormData object, allowing for various server handling methods.
      *
      * @template T
-     * @param {UploadVideoParams<T>} params - The parameters for uploading the video.
-     * @param {string} [params.uploadUrl] - The URL to upload the video file to.
-     * @param {Function} [params.httpClient] - A custom HTTP client to upload the file.
-     * @param {string} [params.fileName=`screen-record-${Date.now()}.webm`] - The name of the file to be uploaded.
-     * @returns {Promise<boolean | T>} - Returns true if the upload was successful or the result of the custom HTTP client.
-     * @throws {Error} If there is no video recorded yet, or if the upload URL is missing when no HTTP client is provided.
+     * @param {function(FormData): Promise<T>} uploadRequestsFileCallback - Callback function to handle the upload of the video file.
+     * @returns {Promise<T>} - Returns the response from the upload callback.
+     * @throws {Error} If no video data is available or the callback is missing.
      */
     const uploadFile = async <T>(
         uploadRequestsFileCallback: <T>(fileEncoded: FormData) => Promise<T>
@@ -65,7 +63,7 @@ function useScreenRecorder(): UseScreenRecorderReturn {
     /**
      * Downloads the recorded video file to the user's device.
      *
-     * @throws {Error} If there is no video URL available for download.
+     * @throws {Error} If no video URL is available for download.
      */
     const downloadFile = () => {
         if (!localVideoUrl) {
@@ -81,10 +79,10 @@ function useScreenRecorder(): UseScreenRecorderReturn {
     }
 
     /**
-     * Starts recording the screen with optional audio.
+     * Starts recording the screen, with an option to include audio.
      *
-     * @param {boolean} [audioEnabled=false] - Indicates whether to capture audio along with the screen.
-     * @throws {Error} If there is an issue accessing the screen or media devices.
+     * @param {boolean} [audioEnabled=false] - Whether to include audio in the recording.
+     * @throws {Error} If screen or media devices access fails.
      */
     const startRecording = async (audioEnabled = false) => {
         if (recording) return
@@ -124,7 +122,9 @@ function useScreenRecorder(): UseScreenRecorderReturn {
     }
 
     /**
-     * Stops the current screen recording and releases the media stream resources.
+     * Stops the current recording session and processes the video data.
+     *
+     * @param {string} [fileName] - Optional file name for the saved video.
      */
     const stopRecording = (fileName = makeTimeStampedFileName()) => {
         if (!mediaRecorderRef.current) return
@@ -141,7 +141,9 @@ function useScreenRecorder(): UseScreenRecorderReturn {
     }
 
     /**
-     * Revokes the current object URL of the recorded video, releasing associated memory.
+     * Revokes the object URL associated with the recorded video to free up memory.
+     * Cleans up the local video URL after the video is no longer needed.
+     *
      */
     const revokeUrl = () => {
         if (!localVideoUrl) return
