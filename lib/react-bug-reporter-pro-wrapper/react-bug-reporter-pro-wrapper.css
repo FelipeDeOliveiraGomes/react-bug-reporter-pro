@@ -7,16 +7,26 @@
 
 .react-bug-reporter-pro__tools-container,
 .react-bug-reporter-pro__modal-overlay {
+    font-size: 10px;
     --primary-color: #3f83f8;
     --primary-color-dark-1: #1c64f2;
+    --primary-color-dark-2: #113f9a;
     --primary-color-light-1: #76a9fa;
-    --primary-color-light-2: #a4cafe;
+    --primary-color-light-2: #a4cafeb5;
+    --text-color-1: #374151;
+    --text-color-2: #6b7280;
+    --text-color-3: #fafafa;
+    --background-color-1: #fafafa;
+    --background-color-2: #dbdbdb;
+}
+
+:root[theme='dark'] .react-bug-reporter-pro__tools-container,
+:root[theme='dark'] .react-bug-reporter-pro__modal-overlay {
     --text-color-1: #f9fafb;
     --text-color-2: #d1d5db;
-    --text-color-3: #6b7280;
-    --text-color-4: #374151;
-    --background-color-1: #fafafa;
-    font-size: 10px;
+    --text-color-3: #fafafa;
+    --background-color-1: #292c32;
+    --background-color-2: #32363d;
 }
 
 .react-bug-reporter-pro__tools-container {
@@ -35,7 +45,7 @@
     padding: 1em;
     border-radius: 50%;
     background-color: var(--primary-color);
-    color: var(--text-color-1);
+    color: var(--text-color-3);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -56,7 +66,7 @@
     border-radius: 0.2em;
     padding: 0 0.5em;
     background-color: var(--primary-color-light-1);
-    color: var(--text-color-1);
+    color: var(--text-color-3);
     cursor: pointer;
     gap: 0.25em;
 }
@@ -97,7 +107,7 @@
     overflow: hidden;
     border-radius: 0.5em;
     padding: 1.25em;
-    box-shadow: 0 0 0.5em 0.1em var(--primary-color-light-2);
+    box-shadow: 0 0 0.75em 0.1em var(--primary-color-light-2);
 }
 
 .react-bug-reporter-pro__close-modal-btn {
@@ -107,6 +117,7 @@
     align-self: flex-end;
     font-size: 1.2em;
     cursor: pointer;
+    color: var(--text-color-1);
 }
 
 .react-bug-reporter-pro__video {
@@ -118,14 +129,15 @@
     width: 100%;
     height: 100%;
     resize: none;
-    border: solid 0.1em var(--primary-color);
+    border: none;
     border-radius: 0.3em;
     padding: 0.5em;
-    color: var(--text-color-3);
+    color: var(--text-color-1);
+    background-color: var(--background-color-2);
 }
 
 .react-bug-reporter-pro__text-area:focus {
-    outline: solid 0.1em var(--primary-color-light-1);
+    outline: solid 0.1em var(--primary-color);
 }
 
 .react-bug-reporter-pro__actions {
@@ -146,20 +158,20 @@
 
 .react-bug-reporter-pro__cancel-btn {
     background-color: transparent;
-    color: var(--primary-color-light-1);
-    border: solid 0.1em var(--primary-color-light-1);
+    color: var(--primary-color);
+    border: solid 0.1em var(--primary-color);
     font-weight: bold;
 }
 
 .react-bug-reporter-pro__upload-btn {
-    background-color: var(--primary-color-dark-1);
-    color: var(--text-color-1);
+    background-color: var(--primary-color-dark-2);
+    color: var(--text-color-3);
     font-weight: bold;
 }
 
 .react-bug-reporter-pro__donwload-btn {
-    background-color: var(--primary-color);
-    color: var(--text-color-1);
+    background-color: var(--primary-color-dark-1);
+    color: var(--text-color-3);
     font-weight: bold;
 }
 
