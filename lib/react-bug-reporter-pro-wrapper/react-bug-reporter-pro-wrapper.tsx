@@ -4,22 +4,15 @@ import { PiRecordFill } from 'react-icons/pi'
 import { FaPause } from 'react-icons/fa6'
 import useHttpRecorder from '../hooks/use-requests-recorder'
 import useScreenRecorder from '../hooks/use-screen-recorder'
+import { defaultTranslations, TranslationsType } from './translations'
 import './react-bug-reporter-pro-wrapper.css'
-
-interface TranslationsText {
-    recordButtonTitle: string
-    uploadButtonTitle: string
-    stopButtonTitle: 'Stop'
-    downloadButtonTitle: string
-    cancelButtonTitle: string
-}
 
 interface ReactBugReporterProWrapper {
     description: string
     setDescription: React.Dispatch<React.SetStateAction<string>>
     audioEnabled?: boolean
     className?: string
-    translations?: Partial<TranslationsText>
+    translations?: TranslationsType
     allowDownloadFiles?: boolean
     customFileNames?: {
         reqFileName?: string
@@ -29,14 +22,6 @@ interface ReactBugReporterProWrapper {
         uploadRequestFileCallback?: <T>(httpReqsFile: FormData) => Promise<T>
         uploadVideoCallback?: <T>(videoFile: FormData) => Promise<T>
     }
-}
-
-const defaultTranslations: TranslationsText = {
-    recordButtonTitle: 'Record',
-    stopButtonTitle: 'Stop',
-    uploadButtonTitle: 'Upload files',
-    downloadButtonTitle: 'Download files',
-    cancelButtonTitle: 'Cancel',
 }
 
 const ReactBugReporterProWrapper: React.FC<ReactBugReporterProWrapper> = ({
@@ -55,7 +40,7 @@ const ReactBugReporterProWrapper: React.FC<ReactBugReporterProWrapper> = ({
     const requestRecorder = useHttpRecorder()
     const screenRecorder = useScreenRecorder()
 
-    const getTranslation = (key: keyof TranslationsText) => {
+    const getTranslation = (key: keyof TranslationsType) => {
         return translations?.[key] ?? defaultTranslations[key]
     }
 

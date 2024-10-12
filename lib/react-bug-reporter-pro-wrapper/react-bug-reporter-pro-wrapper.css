@@ -5,10 +5,6 @@
     box-sizing: border-box;
 }
 
-/* 
-* Declaring this here instead of within the root scope to avoid conflicts with 
-* user-defined variables 
-*/
 .react-bug-reporter-pro__tools-container,
 .react-bug-reporter-pro__modal-overlay {
     --primary-color: #3f83f8;
