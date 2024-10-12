@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
     BrowserHttpRequestListener,
     RequestResponseModel,
@@ -33,11 +33,17 @@ function useHttpRecorder(): UseHttpRecorderReturn {
     const [requests, setRequests] = useState<RequestResponseModel[]>([])
     const [blob, setBlob] = useState<Blob | null>(null)
 
+    const unblockListeningStateCallback = useRef<CallableFunction | null>(null)
+
     /**
      * Starts recording HTTP requests.
      */
     const startRecording = () => {
+        if (recording) return
         BrowserHttpRequestListener.start()
+        unblockListeningStateCallback.current =
+            BrowserHttpRequestListener.blockListeningState()
+
         setRequests([])
         setBlob(null)
         setRecording(true)
@@ -48,8 +54,8 @@ function useHttpRecorder(): UseHttpRecorderReturn {
      *
      * @template T
      * @param {UploadFileParams<T>} params - An object containing:
-     *   - `uploadUrl` {string} - The URL to upload the file to.
-     *   - `httpClient` {function} - Optional custom HTTP client function.
+     *   - `uploadUrl` {string} - The URL to upload the file to (without auth).
+     *   - `httpClient` {function} - Optional custom HTTP client function if you need to handle auth.
      *   - `fileName` {string} - Optional name for the uploaded file.
      * @returns {Promise<boolean | T>} - Returns true if the upload was successful, or the return value from the custom HTTP client.
      * @throws {Error} If there is no recorded data or if both `uploadUrl` and `httpClient` are not provided.
@@ -112,6 +118,9 @@ function useHttpRecorder(): UseHttpRecorderReturn {
      * Stops recording HTTP requests and creates a Blob containing the recorded log data.
      */
     const stopRecording = () => {
+        if (!recording) return
+
+        unblockListeningStateCallback.current?.()
         BrowserHttpRequestListener.stop()
         setRecording(false)
 
