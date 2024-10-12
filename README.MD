@@ -1,6 +1,6 @@
 # REACT BUG REPORTER PRO
 
-**_React Bug Reporter Pro Wrapper_** is a lightweight React component library designed to streamline bug reporting by enabling users to simultaneously record all HTTP requests, screen activity, and audio. This approach enhances the detail and accuracy of bug reports. The library offers a flexible and robust solution for monitoring and controlling HTTP interactions and screen recordings, and it includes comprehensive type definitions to enhance the development experience for consumers.
+**_React Bug Reporter Pro_** is a lightweight React component library designed to streamline bug reporting by enabling users to simultaneously record all HTTP requests, screen activity, and audio. This approach enhances the detail and accuracy of bug reports. The library offers a flexible and robust solution for monitoring and controlling HTTP interactions and screen recordings, and it includes comprehensive type definitions to enhance the development experience for consumers.
 
 _Note: Due to compatibility limitations, mobile browsers are not supported._
 
@@ -235,3 +235,7 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 ## License
 
 This project is open source and available under the [MIT License](LICENSE).
+
+This software is and will always be completely free to use, even for commercial purposes. You don’t need to ask for any kind of permission to use it as you please. However, if you would like to support the project and contribute, donations in Bitcoin are accepted — any sats are welcome!
+
+**Bitcoin Donation Address:** `bc1qkk46335s70yr7suz50m4ryfplvrxwmpy325d92`
