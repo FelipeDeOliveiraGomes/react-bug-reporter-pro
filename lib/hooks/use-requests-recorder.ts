@@ -27,7 +27,7 @@ interface UseHttpRecorderReturn {
 function useHttpRecorder(): UseHttpRecorderReturn {
     const [recording, setRecording] = useState(false)
     const [requests, setRequests] = useState<RequestResponseModel[]>([])
-    const [fileName, setFileName] = useState('')
+    const [fileNameState, setFileNameState] = useState('')
     const [blob, setBlob] = useState<Blob | null>(null)
 
     const unblockListeningStateCallback = useRef<CallableFunction | null>(null)
@@ -70,7 +70,7 @@ function useHttpRecorder(): UseHttpRecorderReturn {
         }
 
         const formData = new FormData()
-        formData.append('file', blob, fileName)
+        formData.append('file', blob, fileNameState)
         return uploadRequestsFileCallback(formData)
     }
 
@@ -89,7 +89,7 @@ function useHttpRecorder(): UseHttpRecorderReturn {
         const a = document.createElement('a')
         a.style.display = 'none'
         a.href = url
-        a.download = fileName
+        a.download = fileNameState
         document.body.appendChild(a)
         a.click()
         window.URL.revokeObjectURL(url)
@@ -101,13 +101,13 @@ function useHttpRecorder(): UseHttpRecorderReturn {
      *
      * @param {string} [fileName] - Optional filename for the log file.
      */
-    const stopRecording = (fileName?: string) => {
+    const stopRecording = (fileName = makeTimeStampedFileName()) => {
         if (!recording) return
 
         unblockListeningStateCallback.current?.()
         BrowserHttpRequestListener.stop()
         setRecording(false)
-        setFileName(fileName || makeTimeStampedFileName())
+        setFileNameState(fileName)
 
         if (requests.length > 0) {
             const fileContent = requests
