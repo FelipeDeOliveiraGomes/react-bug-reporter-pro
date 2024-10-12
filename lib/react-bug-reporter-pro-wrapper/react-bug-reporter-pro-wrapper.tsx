@@ -15,13 +15,39 @@ interface TranslationsText {
 }
 
 interface ReactBugReporterProWrapper {
+    description: string
+    setDescription: React.Dispatch<React.SetStateAction<string>>
+    audioEnabled?: boolean
     className?: string
     translations?: Partial<TranslationsText>
+    allowDownloadFiles?: boolean
+    customFileNames?: {
+        reqFileName?: string
+        vidFileName?: string
+    }
+    uploadFiles?: {
+        uploadRequestFileCallback?: <T>(httpReqsFile: FormData) => Promise<T>
+        uploadVideoCallback?: <T>(videoFile: FormData) => Promise<T>
+    }
+}
+
+const defaultTranslations: TranslationsText = {
+    recordButtonTitle: 'Record',
+    stopButtonTitle: 'Stop',
+    uploadButtonTitle: 'Upload files',
+    downloadButtonTitle: 'Download files',
+    cancelButtonTitle: 'Cancel',
 }
 
 const ReactBugReporterProWrapper: React.FC<ReactBugReporterProWrapper> = ({
+    description,
     className,
     translations,
+    allowDownloadFiles,
+    uploadFiles,
+    customFileNames,
+    audioEnabled,
+    setDescription,
 }) => {
     const [modalIsOpen, setModalIsOpen] = useState(false)
     const [toolsAreOpen, setToolsAreOpen] = useState(false)
@@ -29,20 +55,57 @@ const ReactBugReporterProWrapper: React.FC<ReactBugReporterProWrapper> = ({
     const requestRecorder = useHttpRecorder()
     const screenRecorder = useScreenRecorder()
 
-    const defaultTranslations: TranslationsText = {
-        recordButtonTitle: 'Record',
-        stopButtonTitle: 'Stop',
-        uploadButtonTitle: 'Upload files',
-        downloadButtonTitle: 'Download files',
-        cancelButtonTitle: 'Cancel',
-    }
-
     const getTranslation = (key: keyof TranslationsText) => {
         return translations?.[key] ?? defaultTranslations[key]
     }
 
     const concatClassnames = (cn: string) => {
         return `react-bug-reporter-pro${cn} ${className ? `${className}${cn}` : ''}`
+    }
+
+    const handleStartRecording = () => {
+        requestRecorder.startRecording()
+        screenRecorder.startRecording(audioEnabled)
+    }
+
+    const handleStopRecording = () => {
+        requestRecorder.stopRecording(customFileNames?.reqFileName)
+        screenRecorder.stopRecording(customFileNames?.vidFileName)
+        setModalIsOpen(true)
+    }
+
+    const handleCloseModal = () => {
+        screenRecorder.revokeUrl()
+        setModalIsOpen(false)
+    }
+
+    const handleDownloadClick = () => {
+        screenRecorder.downloadFile()
+        requestRecorder.downloadFile()
+    }
+
+    const handleUploadClick = async () => {
+        const uploadVidCallback = uploadFiles?.uploadRequestFileCallback
+        const uploadReqFileCallback = uploadFiles?.uploadVideoCallback
+
+        if (!uploadVidCallback && !uploadReqFileCallback) {
+            console.error('Missing upload callback')
+            return
+        }
+
+        try {
+            if (uploadVidCallback) {
+                await screenRecorder.uploadFile(uploadVidCallback)
+            }
+
+            if (uploadReqFileCallback) {
+                await requestRecorder.uploadFile(uploadReqFileCallback)
+            }
+        } catch (error) {
+            console.error('Error to upload files: ', error)
+        } finally {
+            handleCloseModal()
+        }
     }
 
     return (
@@ -59,11 +122,7 @@ const ReactBugReporterProWrapper: React.FC<ReactBugReporterProWrapper> = ({
                     <>
                         {requestRecorder.recording ? (
                             <button
-                                onClick={() => {
-                                    requestRecorder.stopRecording()
-                                    screenRecorder.stopRecording()
-                                    setModalIsOpen(true)
-                                }}
+                                onClick={handleStopRecording}
                                 className={concatClassnames('__stop-btn')}
                             >
                                 <FaPause />
@@ -71,10 +130,7 @@ const ReactBugReporterProWrapper: React.FC<ReactBugReporterProWrapper> = ({
                             </button>
                         ) : (
                             <button
-                                onClick={() => {
-                                    requestRecorder.startRecording()
-                                    screenRecorder.startRecording()
-                                }}
+                                onClick={handleStartRecording}
                                 className={concatClassnames('__record-btn')}
                             >
                                 <PiRecordFill />
@@ -87,7 +143,7 @@ const ReactBugReporterProWrapper: React.FC<ReactBugReporterProWrapper> = ({
 
             {modalIsOpen ? (
                 <div
-                    onClick={() => setModalIsOpen(false)}
+                    onClick={handleCloseModal}
                     className={concatClassnames('__modal-overlay')}
                 >
                     <section
@@ -95,7 +151,7 @@ const ReactBugReporterProWrapper: React.FC<ReactBugReporterProWrapper> = ({
                         className={concatClassnames('__modal')}
                     >
                         <button
-                            onClick={() => setModalIsOpen(false)}
+                            onClick={handleCloseModal}
                             className={concatClassnames('__close-modal-btn')}
                         >
                             x
@@ -103,32 +159,45 @@ const ReactBugReporterProWrapper: React.FC<ReactBugReporterProWrapper> = ({
 
                         <video
                             className={concatClassnames('__video')}
-                            src={screenRecorder.videoUrl ?? ''}
+                            src={screenRecorder.localVideoUrl ?? ''}
                             controls
                         ></video>
 
-                        <textarea className={concatClassnames('__text-area')} />
+                        <textarea
+                            value={description}
+                            onChange={({ target }) =>
+                                setDescription(target.value)
+                            }
+                            className={concatClassnames('__text-area')}
+                        />
 
                         <div className={concatClassnames('__actions')}>
                             <button
+                                onClick={handleCloseModal}
                                 className={concatClassnames('__cancel-btn')}
                             >
                                 {getTranslation('cancelButtonTitle')}
                             </button>
-                            <button
-                                onClick={() => {
-                                    screenRecorder.downloadFile()
-                                    requestRecorder.downloadFile()
-                                }}
-                                className={concatClassnames('__donwload-btn')}
-                            >
-                                {getTranslation('downloadButtonTitle')}
-                            </button>
-                            <button
-                                className={concatClassnames('__upload-btn')}
-                            >
-                                {getTranslation('uploadButtonTitle')}
-                            </button>
+
+                            {allowDownloadFiles ? (
+                                <button
+                                    onClick={handleDownloadClick}
+                                    className={concatClassnames(
+                                        '__donwload-btn'
+                                    )}
+                                >
+                                    {getTranslation('downloadButtonTitle')}
+                                </button>
+                            ) : null}
+
+                            {uploadFiles ? (
+                                <button
+                                    onClick={handleUploadClick}
+                                    className={concatClassnames('__upload-btn')}
+                                >
+                                    {getTranslation('uploadButtonTitle')}
+                                </button>
+                            ) : null}
                         </div>
                     </section>
                 </div>
