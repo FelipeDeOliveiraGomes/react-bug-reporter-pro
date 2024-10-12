@@ -5,26 +5,11 @@ import { FaPause } from 'react-icons/fa6'
 import useHttpRecorder from '../hooks/use-requests-recorder'
 import useScreenRecorder from '../hooks/use-screen-recorder'
 import { defaultTranslations, TranslationsType } from './translations'
+import { ReactBugReporterProWrapperType } from './types'
+import { GetFnParamType } from '../utils-types'
 import './react-bug-reporter-pro-wrapper.css'
 
-interface ReactBugReporterProWrapper {
-    description: string
-    setDescription: React.Dispatch<React.SetStateAction<string>>
-    audioEnabled?: boolean
-    className?: string
-    translations?: TranslationsType
-    allowDownloadFiles?: boolean
-    customFileNames?: {
-        reqFileName?: string
-        vidFileName?: string
-    }
-    uploadFiles?: {
-        uploadRequestFileCallback?: <T>(httpReqsFile: FormData) => Promise<T>
-        uploadVideoCallback?: <T>(videoFile: FormData) => Promise<T>
-    }
-}
-
-const ReactBugReporterProWrapper: React.FC<ReactBugReporterProWrapper> = ({
+const ReactBugReporterProWrapper: ReactBugReporterProWrapperType = ({
     description,
     className,
     translations,
@@ -32,7 +17,9 @@ const ReactBugReporterProWrapper: React.FC<ReactBugReporterProWrapper> = ({
     uploadFiles,
     customFileNames,
     audioEnabled,
+    closeModalAfterDownload,
     setDescription,
+    onFileUploaded,
 }) => {
     const [modalIsOpen, setModalIsOpen] = useState(false)
     const [toolsAreOpen, setToolsAreOpen] = useState(false)
@@ -61,12 +48,14 @@ const ReactBugReporterProWrapper: React.FC<ReactBugReporterProWrapper> = ({
 
     const handleCloseModal = () => {
         screenRecorder.revokeUrl()
+        setDescription('')
         setModalIsOpen(false)
     }
 
     const handleDownloadClick = () => {
         screenRecorder.downloadFile()
         requestRecorder.downloadFile()
+        if (closeModalAfterDownload) handleCloseModal()
     }
 
     const handleUploadClick = async () => {
@@ -78,13 +67,32 @@ const ReactBugReporterProWrapper: React.FC<ReactBugReporterProWrapper> = ({
             return
         }
 
+        let videoUploadResult: GetFnParamType<
+            typeof onFileUploaded
+        >['videoUploadResult']
+
+        let requestsFileUploadResult: GetFnParamType<
+            typeof onFileUploaded
+        >['requestsFileUploadResult']
+
         try {
             if (uploadVidCallback) {
-                await screenRecorder.uploadFile(uploadVidCallback)
+                videoUploadResult = (await screenRecorder.uploadFile(
+                    uploadVidCallback
+                )) as typeof videoUploadResult
             }
 
             if (uploadReqFileCallback) {
-                await requestRecorder.uploadFile(uploadReqFileCallback)
+                requestsFileUploadResult = (await requestRecorder.uploadFile(
+                    uploadReqFileCallback
+                )) as typeof requestsFileUploadResult
+            }
+
+            if (onFileUploaded) {
+                await onFileUploaded({
+                    requestsFileUploadResult,
+                    videoUploadResult,
+                })
             }
         } catch (error) {
             console.error('Error to upload files: ', error)

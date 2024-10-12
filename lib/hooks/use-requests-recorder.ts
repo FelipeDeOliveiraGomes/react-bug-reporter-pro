@@ -9,9 +9,9 @@ interface UseHttpRecorderReturn {
     startRecording: () => void
     stopRecording: (fileName?: string) => void
     downloadFile: () => void
-    uploadFile: <T>(
-        uploadRequestsFileCallback: <T>(fileEncoded: FormData) => Promise<T>
-    ) => Promise<T>
+    uploadFile: (
+        uploadRequestsFileCallback: (fileEncoded: FormData) => Promise<unknown>
+    ) => Promise<unknown>
 }
 
 /**
@@ -56,14 +56,13 @@ function useHttpRecorder(): UseHttpRecorderReturn {
      * Uploads the recorded HTTP request log using a specified callback function.
      * Sends the recorded data in a FormData object, allowing flexibility for different server implementations.
      *
-     * @template T
-     * @param {function(FormData): Promise<T>} uploadRequestsFileCallback - Callback function to handle the file upload.
+     * @param {function(FormData): Promise<unknown>} uploadRequestsFileCallback - Callback function to handle the file upload.
      * @returns {Promise<T>} - The response returned by the upload callback.
      * @throws {Error} If there is no recorded data or the callback is not provided.
      */
-    const uploadFile = async <T>(
-        uploadRequestsFileCallback: <T>(fileEncoded: FormData) => Promise<T>
-    ): Promise<T> => {
+    const uploadFile = async (
+        uploadRequestsFileCallback: (fileEncoded: FormData) => Promise<unknown>
+    ): Promise<unknown> => {
         if (!blob) throw new Error('There is no requests recorded yet')
         if (!uploadRequestsFileCallback) {
             throw new Error('Missing upload callback')

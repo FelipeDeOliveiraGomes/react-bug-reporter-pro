@@ -53,7 +53,23 @@ const App: React.FC = () => {
                 setDescription={setDescription}
                 allowDownloadFiles={true}
                 audioEnabled={true}
-                uploadFiles={{}}
+                uploadFiles={{
+                    uploadVideoCallback: () => Promise.resolve('Bar' as const),
+                    uploadRequestFileCallback: () => {
+                        return Promise.resolve('Foo' as const)
+                    },
+                }}
+                onFileUploaded={({
+                    requestsFileUploadResult,
+                    videoUploadResult,
+                }) => {
+                    console.log({
+                        requestsFileUploadResult,
+                        videoUploadResult,
+                    })
+
+                    return Promise.resolve()
+                }}
             />
         </>
     )

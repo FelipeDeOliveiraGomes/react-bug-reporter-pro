@@ -6,9 +6,9 @@ interface UseScreenRecorderReturn {
     startRecording: (audioEnabled?: boolean) => void
     stopRecording: (fileName?: string) => void
     downloadFile: () => void
-    uploadFile: <T>(
-        uploadRequestsFileCallback: <T>(fileEncoded: FormData) => Promise<T>
-    ) => Promise<T>
+    uploadFile: (
+        uploadRequestsFileCallback: (fileEncoded: FormData) => Promise<unknown>
+    ) => Promise<unknown>
     revokeUrl: () => void
 }
 
@@ -42,14 +42,13 @@ function useScreenRecorder(): UseScreenRecorderReturn {
      * Uploads the recorded video file using a custom callback function.
      * Sends the video data as a FormData object, allowing for various server handling methods.
      *
-     * @template T
      * @param {function(FormData): Promise<T>} uploadRequestsFileCallback - Callback function to handle the upload of the video file.
-     * @returns {Promise<T>} - Returns the response from the upload callback.
+     * @returns {Promise<unknown>} - Returns the response from the upload callback.
      * @throws {Error} If no video data is available or the callback is missing.
      */
-    const uploadFile = async <T>(
-        uploadRequestsFileCallback: <T>(fileEncoded: FormData) => Promise<T>
-    ): Promise<T> => {
+    const uploadFile = async (
+        uploadRequestsFileCallback: (fileEncoded: FormData) => Promise<unknown>
+    ): Promise<unknown> => {
         if (!blob) throw new Error('There is no video recorded yet')
         if (!uploadRequestsFileCallback) {
             throw new Error('Missing upload callback')
