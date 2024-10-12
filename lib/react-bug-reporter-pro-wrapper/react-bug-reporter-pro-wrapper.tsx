@@ -53,6 +53,27 @@ const Timer: React.FC<{ initialTime: number; stop: boolean }> = ({
     )
 }
 
+/**
+ * A wrapper component for reporting bugs that includes recording HTTP requests
+ * and screen actions, along with the ability to upload and download files.
+ *
+ * @template T - The type of the result from the request file upload callback.
+ * @template U - The type of the result from the video upload callback.
+ *
+ * @param {Object} props - The component props.
+ * @param {string} props.description - A description of the bug being reported.
+ * @param {React.Dispatch<React.SetStateAction<string>>} props.setDescription - Function to update the description state.
+ * @param {boolean} [props.closeModalAfterDownload=false] - If true, the modal will close after downloading files.
+ * @param {boolean} [props.audioEnabled=false] - If true, audio recording will be enabled.
+ * @param {string} [props.className] - Additional class names for styling.
+ * @param {TranslationsType} [props.translations] - Custom translations for button labels.
+ * @param {boolean} [props.allowDownloadFiles=false] - If true, allows users to download recorded files.
+ * @param {{ reqFileName?: string; vidFileName?: string; }} [props.customFileNames] - Custom file names for uploads.
+ * @param {{ uploadRequestFileCallback?: (httpReqsFile: FormData) => Promise<T>; uploadVideoCallback?: (videoFile: FormData) => Promise<U>; }} [props.uploadFiles] - Callback functions for file uploads.
+ * @param {(params: OnFileUploadedParams<T, U>) => Promise<unknown>} [props.onFileUploaded] - Callback invoked after files have been uploaded.
+ *
+ * @returns {JSX.Element} The rendered bug reporter component.
+ */
 const ReactBugReporterProWrapper: ReactBugReporterProWrapperType = ({
     description,
     className,
@@ -91,6 +112,7 @@ const ReactBugReporterProWrapper: ReactBugReporterProWrapperType = ({
         screenRecorder.stopRecording(customFileNames?.vidFileName)
         setModalIsOpen(true)
         setRecordInitTime(0)
+        setToolsAreOpen(false)
     }
 
     const handleCloseModal = () => {
