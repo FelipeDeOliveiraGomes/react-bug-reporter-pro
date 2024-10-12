@@ -88,13 +88,29 @@ function useScreenRecorder(): UseScreenRecorderReturn {
         if (recording) return
 
         try {
-            const stream = await navigator.mediaDevices.getDisplayMedia({
+            const screenStream = await navigator.mediaDevices.getDisplayMedia({
                 video: true,
                 audio: audioEnabled,
             })
 
-            setMediaStream(stream)
-            mediaRecorderRef.current = new MediaRecorder(stream)
+            if (audioEnabled) {
+                const audioStream = await navigator.mediaDevices.getUserMedia({
+                    audio: true,
+                })
+
+                const combinedStream = new MediaStream([
+                    ...screenStream.getVideoTracks(),
+                    ...screenStream.getAudioTracks(),
+                    ...audioStream.getAudioTracks(),
+                ])
+
+                setMediaStream(combinedStream)
+                mediaRecorderRef.current = new MediaRecorder(combinedStream)
+            } else {
+                setMediaStream(screenStream)
+                mediaRecorderRef.current = new MediaRecorder(screenStream)
+            }
+
             recordedChunks.current = []
 
             mediaRecorderRef.current.ondataavailable = (event) => {
@@ -109,7 +125,6 @@ function useScreenRecorder(): UseScreenRecorderReturn {
                 })
 
                 setBlob(newBlob)
-
                 const url = URL.createObjectURL(newBlob)
                 setlocalVideoUrl(url)
             }
@@ -117,7 +132,7 @@ function useScreenRecorder(): UseScreenRecorderReturn {
             mediaRecorderRef.current.start()
             setRecording(true)
         } catch (error) {
-            console.error('Error accessing the screen:', error)
+            console.error('Error accessing the screen or audio devices:', error)
         }
     }
 
