@@ -32,6 +32,7 @@
 .react-bug-reporter-pro__modal-overlay {
     font-size: 1vw;
     box-sizing: border-box;
+    z-index: 100;
 }
 
 .react-bug-reporter-pro__tools-container *,
