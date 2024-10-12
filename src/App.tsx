@@ -1,44 +1,39 @@
 import React, { useState } from 'react'
-import {
-    ReactBugReporterProWrapper,
-    useHttpRecorder,
-    useScreenRecorder,
-} from '../lib'
+import { ReactBugReporterProWrapper } from '../lib'
+import './styles.css'
 
 const App: React.FC = () => {
     const [counter, setCounter] = useState(0)
 
-    const screenRec = useScreenRecorder()
-    const requestRec = useHttpRecorder()
-
     return (
-        <section>
-            {screenRec.videoUrl ? (
-                <video controls src={screenRec.videoUrl} />
-            ) : null}
-            <button
-                onClick={() => {
-                    requestRec.startRecording()
-                    screenRec.startRecording()
-                }}
-            >
-                Start
-            </button>
-            <button
-                onClick={() => {
-                    requestRec.stopRecording()
-                    screenRec.stopRecording()
-                }}
-            >
-                Stop
-            </button>
-            <button onClick={() => setCounter(counter + 1)}>
-                Increment counter
-            </button>
-            <div>{counter}</div>
-
+        <>
+            <section className="counter">
+                <div className="counter__inner-container">
+                    <span className="counter__display">{counter}</span>
+                    <div className="counter__actions">
+                        <button
+                            onClick={() => setCounter((prev) => prev + 1)}
+                            className="counter__btn"
+                        >
+                            + Increment
+                        </button>
+                        <button
+                            onClick={() => setCounter((prev) => prev - 1)}
+                            className="counter__btn"
+                        >
+                            - Decrement
+                        </button>
+                        <button
+                            onClick={() => setCounter(0)}
+                            className="counter__btn"
+                        >
+                            Reset
+                        </button>
+                    </div>
+                </div>
+            </section>
             <ReactBugReporterProWrapper />
-        </section>
+        </>
     )
 }
 

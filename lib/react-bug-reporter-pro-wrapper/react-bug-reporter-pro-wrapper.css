@@ -1,4 +1,4 @@
-/* to avoid conflicts with user vars */
+/* to avoid conflicts with user styles */
 .react-bug-reporter-pro__tools-container, 
 .react-bug-reporter-pro__modal-overlay {
     --primary-color: #7A1CAC;
@@ -6,7 +6,9 @@
     --primary-color-light: #AD49E1;
     --text-color-1: #EEEEEE;
     --text-color-2: #686D76;
-    --text-color-3: #373A40
+    --text-color-3: #373A40;
+    
+    box-sizing: border-box;
 }
 
 .react-bug-reporter-pro__tools-container {
