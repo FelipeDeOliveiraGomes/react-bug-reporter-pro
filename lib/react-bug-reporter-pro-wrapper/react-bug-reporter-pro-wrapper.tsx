@@ -163,10 +163,14 @@ const ReactBugReporterProWrapper: ReactBugReporterProWrapperType = ({
                     videoUploadResult,
                 })
             }
-        } catch (error) {
-            console.error('Error to upload files: ', error)
-        } finally {
+
             handleCloseModal()
+        } catch (error) {
+            await onFileUploaded?.({
+                requestsFileUploadResult,
+                videoUploadResult,
+                error,
+            })
         }
     }
 

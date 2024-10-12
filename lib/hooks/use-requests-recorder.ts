@@ -84,7 +84,6 @@ function useHttpRecorder(): UseHttpRecorderReturn {
         }
 
         const url = URL.createObjectURL(blob)
-
         const a = document.createElement('a')
         a.style.display = 'none'
         a.href = url

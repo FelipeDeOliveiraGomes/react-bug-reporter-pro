@@ -3,6 +3,7 @@ import { TranslationsType } from './translations'
 interface OnFileUploadedParams<T, U> {
     requestsFileUploadResult?: T
     videoUploadResult?: U
+    error?: unknown
 }
 
 /**
@@ -45,7 +46,7 @@ interface ReactBugReporterProWrapperProps<T, U> {
         uploadVideoCallback?: (videoFile: FormData) => Promise<U>
     }
 
-    /** Callback invoked after files have been uploaded with the result of the uploads callbacks. */
+    /** Callback invoked after files have been uploaded with the result of the uploads callbacks or error if exist. */
     onFileUploaded?: (params: OnFileUploadedParams<T, U>) => Promise<unknown>
 }
 
