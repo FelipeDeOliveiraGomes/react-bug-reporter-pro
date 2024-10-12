@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FaBug } from 'react-icons/fa'
 import { PiRecordFill } from 'react-icons/pi'
 import { FaPause } from 'react-icons/fa6'
@@ -8,6 +8,50 @@ import { defaultTranslations, TranslationsType } from './translations'
 import { ReactBugReporterProWrapperType } from './types'
 import { GetFnParamType } from '../utils-types'
 import './react-bug-reporter-pro-wrapper.css'
+
+// separetedd only to encapsulate this frequent updated state, kind of micro-optimization
+const Timer: React.FC<{ initialTime: number; stop: boolean }> = ({
+    initialTime,
+    stop,
+}) => {
+    const [currentTime, setCurrentTime] = useState(initialTime)
+
+    const getDiffTimeFormatted = () => {
+        const diff = (currentTime - initialTime) / 1000
+        const minutes = String(
+            diff >= 60 ? parseInt(String(diff / 60)) : 0
+        ).padStart(2, '0')
+
+        const seconds = String(
+            diff >= 60 ? parseInt(String(diff % 60)) : diff.toFixed(0)
+        ).padStart(2, '0')
+
+        return {
+            minutes,
+            seconds,
+        }
+    }
+
+    const { minutes, seconds } = getDiffTimeFormatted()
+
+    useEffect(() => {
+        if (!initialTime) return
+
+        const intervalId = setInterval(() => {
+            setCurrentTime(Date.now())
+        }, 1000)
+
+        return () => {
+            clearInterval(intervalId)
+        }
+    }, [stop, initialTime])
+
+    return (
+        <span>
+            {minutes}:{seconds}
+        </span>
+    )
+}
 
 const ReactBugReporterProWrapper: ReactBugReporterProWrapperType = ({
     description,
@@ -23,6 +67,7 @@ const ReactBugReporterProWrapper: ReactBugReporterProWrapperType = ({
 }) => {
     const [modalIsOpen, setModalIsOpen] = useState(false)
     const [toolsAreOpen, setToolsAreOpen] = useState(false)
+    const [recordInitTime, setRecordInitTime] = useState(0)
 
     const requestRecorder = useHttpRecorder()
     const screenRecorder = useScreenRecorder()
@@ -38,12 +83,14 @@ const ReactBugReporterProWrapper: ReactBugReporterProWrapperType = ({
     const handleStartRecording = () => {
         requestRecorder.startRecording()
         screenRecorder.startRecording(audioEnabled)
+        setRecordInitTime(Date.now())
     }
 
     const handleStopRecording = () => {
         requestRecorder.stopRecording(customFileNames?.reqFileName)
         screenRecorder.stopRecording(customFileNames?.vidFileName)
         setModalIsOpen(true)
+        setRecordInitTime(0)
     }
 
     const handleCloseModal = () => {
@@ -120,6 +167,10 @@ const ReactBugReporterProWrapper: ReactBugReporterProWrapperType = ({
                             >
                                 <FaPause />
                                 {getTranslation('stopButtonTitle')}
+                                <Timer
+                                    initialTime={recordInitTime}
+                                    stop={!screenRecorder.recording}
+                                />
                             </button>
                         ) : (
                             <button
