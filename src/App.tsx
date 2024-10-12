@@ -4,6 +4,7 @@ import './styles.css'
 
 const App: React.FC = () => {
     const [counter, setCounter] = useState(0)
+    const [description, setDescription] = useState('')
 
     const getTodos = async () => {
         try {
@@ -47,7 +48,12 @@ const App: React.FC = () => {
                     </div>
                 </div>
             </section>
-            <ReactBugReporterProWrapper />
+            <ReactBugReporterProWrapper
+                description={description}
+                setDescription={setDescription}
+                allowDownloadFiles={true}
+                audioEnabled={true}
+            />
         </>
     )
 }
