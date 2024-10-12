@@ -168,7 +168,7 @@ const ReactBugReporterProWrapper: React.FC<ReactBugReporterProWrapper> = ({
                                 <button
                                     onClick={handleDownloadClick}
                                     className={concatClassnames(
-                                        '__donwload-btn'
+                                        '__download-btn'
                                     )}
                                 >
                                     {getTranslation('downloadButtonTitle')}

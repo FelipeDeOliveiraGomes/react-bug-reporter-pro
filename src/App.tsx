@@ -53,6 +53,7 @@ const App: React.FC = () => {
                 setDescription={setDescription}
                 allowDownloadFiles={true}
                 audioEnabled={true}
+                uploadFiles={{}}
             />
         </>
     )

@@ -1,60 +1,70 @@
-.react-bug-reporter-pro__tools-container,
-.react-bug-reporter-pro__tools-container *,
-.react-bug-reporter-pro__modal-overlay,
-.react-bug-reporter-pro__modal-overlay * {
-    box-sizing: border-box;
+:root {
+    --rbrp-font-size-s: 0.75em;
+    --rbrp-font-size-m: 1em;
+    --rbrp-spacing-2xs: 0.25em;
+    --rbrp-spacing-xs: 0.5em;
+    --rbrp-spacing-s: 0.75em;
+    --rbrp-spacing-m: 1em;
+    --rbrp-spacing-l: 1.25em;
+    --rbrp-border-radius-s: 0.25em;
+    --rbrp-border-radius-m: 0.5em;
+    --rbrp-primary-color: #3f83f8;
+    --rbrp-primary-color-dark-1: #1c64f2;
+    --rbrp-primary-color-dark-2: #113f9a;
+    --rbrp-primary-color-light-1: #76a9fa;
+    --rbrp-primary-color-light-2: #a4cafeb5;
+    --rbrp-text-color-1: #374151;
+    --rbrp-text-color-2: #6b7280;
+    --rbrp-text-color-3: #fafafa;
+    --rbrp-background-color-1: #fafafa;
+    --rbrp-background-color-2: #dbdbdb;
+}
+
+:root[theme='dark'] {
+    --rbrp-text-color-1: #f9fafb;
+    --rbrp-text-color-2: #d1d5db;
+    --rbrp-text-color-3: #fafafa;
+    --rbrp-background-color-1: #292c32;
+    --rbrp-background-color-2: #32363d;
 }
 
 .react-bug-reporter-pro__tools-container,
 .react-bug-reporter-pro__modal-overlay {
-    font-size: 10px;
-    --primary-color: #3f83f8;
-    --primary-color-dark-1: #1c64f2;
-    --primary-color-dark-2: #113f9a;
-    --primary-color-light-1: #76a9fa;
-    --primary-color-light-2: #a4cafeb5;
-    --text-color-1: #374151;
-    --text-color-2: #6b7280;
-    --text-color-3: #fafafa;
-    --background-color-1: #fafafa;
-    --background-color-2: #dbdbdb;
+    font-size: 1vw;
+    box-sizing: border-box;
 }
 
-:root[theme='dark'] .react-bug-reporter-pro__tools-container,
-:root[theme='dark'] .react-bug-reporter-pro__modal-overlay {
-    --text-color-1: #f9fafb;
-    --text-color-2: #d1d5db;
-    --text-color-3: #fafafa;
-    --background-color-1: #292c32;
-    --background-color-2: #32363d;
+.react-bug-reporter-pro__tools-container *,
+.react-bug-reporter-pro__modal-overlay * {
+    box-sizing: border-box;
 }
 
 .react-bug-reporter-pro__tools-container {
-    position: absolute;
-    right: 1em;
-    bottom: 1em;
     display: flex;
-    align-items: center;
     flex-direction: row-reverse;
-    gap: 0.5em;
+    align-items: center;
+    position: absolute;
+    right: var(--rbrp-spacing-m);
+    bottom: var(--rbrp-spacing-m);
+    gap: var(--rbrp-spacing-xs);
 }
 
 .react-bug-reporter-pro__open-tools-btn {
-    position: relative;
-    border: none;
-    padding: 1em;
-    border-radius: 50%;
-    background-color: var(--primary-color);
-    color: var(--text-color-3);
-    cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 0.5em;
-    font-size: 1em;
+    position: relative;
+    border: none;
+    padding: var(--rbrp-spacing-m);
+    border-radius: 50%;
+    background-color: var(--rbrp-primary-color);
+    color: var(--rbrp-text-color-3);
+    cursor: pointer;
+    gap: var(--rbrp-spacing-xs);
+    font-size: 0.8em;
 }
 
 .react-bug-reporter-pro__open-tools-btn:hover {
-    background-color: var(--primary-color-dark-1);
+    background-color: var(--rbrp-primary-color-dark-1);
 }
 
 .react-bug-reporter-pro__record-btn,
@@ -63,12 +73,13 @@
     align-items: center;
     height: 2em;
     border: none;
-    border-radius: 0.2em;
-    padding: 0 0.5em;
-    background-color: var(--primary-color-light-1);
-    color: var(--text-color-3);
+    border-radius: var(--rbrp-border-radius-s);
+    padding: 0 var(--rbrp-spacing-xs);
+    background-color: var(--rbrp-primary-color-light-1);
+    color: var(--rbrp-text-color-3);
     cursor: pointer;
-    gap: 0.25em;
+    gap: var(--rbrp-spacing-2xs);
+    font-size: var(--rbrp-font-size-s);
 }
 
 .react-bug-reporter-pro__record-btn:disabled,
@@ -79,16 +90,16 @@
 
 .react-bug-reporter-pro__record-btn:hover,
 .react-bug-reporter-pro__stop-btn:hover {
-    background-color: var(--primary-color);
+    background-color: var(--rbrp-primary-color);
 }
 
 .react-bug-reporter-pro__modal-overlay {
-    position: absolute;
+    position: fixed;
     top: 0;
     right: 0;
     left: 0;
     bottom: 0;
-    z-index: 10;
+    z-index: 1000;
     background-color: #00000080;
     display: flex;
     align-items: center;
@@ -96,18 +107,18 @@
 }
 
 .react-bug-reporter-pro__modal {
-    width: calc(100% - 2em);
-    height: calc(100% - 2em);
-    max-width: 38em;
-    max-height: 40em;
-    background-color: var(--background-color-1);
+    width: 100%;
+    height: 100%;
+    max-width: 32em;
+    max-height: 36em;
+    background-color: var(--rbrp-background-color-1);
     display: flex;
     flex-direction: column;
-    gap: 1em;
+    gap: var(--rbrp-spacing-m);
     overflow: hidden;
-    border-radius: 0.5em;
-    padding: 1.25em;
-    box-shadow: 0 0 0.75em 0.1em var(--primary-color-light-2);
+    border-radius: var(--rbrp-border-radius-m);
+    padding: var(--rbrp-spacing-l);
+    box-shadow: 0 0 0.75em 0.1em var(--rbrp-primary-color-light-2);
 }
 
 .react-bug-reporter-pro__close-modal-btn {
@@ -115,14 +126,14 @@
     background-color: transparent;
     width: max-content;
     align-self: flex-end;
-    font-size: 1.2em;
     cursor: pointer;
-    color: var(--text-color-1);
+    font-size: var(--rbrp-font-size-m);
+    color: var(--rbrp-text-color-1);
 }
 
 .react-bug-reporter-pro__video {
     width: 100%;
-    border-radius: 0.3em;
+    border-radius: var(--rbrp-border-radius-s);
 }
 
 .react-bug-reporter-pro__text-area {
@@ -130,110 +141,49 @@
     height: 100%;
     resize: none;
     border: none;
-    border-radius: 0.3em;
-    padding: 0.5em;
-    color: var(--text-color-1);
-    background-color: var(--background-color-2);
+    border-radius: var(--rbrp-border-radius-s);
+    padding: var(--rbrp-spacing-xs);
+    color: var(--rbrp-text-color-1);
+    background-color: var(--rbrp-background-color-2);
+    font-size: var(--rbrp-font-size-s);
 }
 
 .react-bug-reporter-pro__text-area:focus {
-    outline: solid 0.1em var(--primary-color);
+    outline: solid 0.1em var(--rbrp-primary-color);
 }
 
 .react-bug-reporter-pro__actions {
     display: flex;
     margin-left: auto;
     flex-direction: row;
-    gap: 0.5em;
+    gap: var(--rbrp-spacing-xs);
 }
 
 .react-bug-reporter-pro__cancel-btn,
 .react-bug-reporter-pro__upload-btn,
-.react-bug-reporter-pro__donwload-btn {
-    padding: 0.5em;
+.react-bug-reporter-pro__download-btn {
     cursor: pointer;
-    border-radius: 0.2em;
     border: none;
+    padding: var(--rbrp-spacing-xs);
+    border-radius: var(--rbrp-border-radius-s);
+    font-size: var(--rbrp-font-size-s);
 }
 
 .react-bug-reporter-pro__cancel-btn {
     background-color: transparent;
-    color: var(--primary-color);
-    border: solid 0.1em var(--primary-color);
+    color: var(--rbrp-primary-color);
+    border: solid 0.1em var(--rbrp-primary-color);
     font-weight: bold;
 }
 
 .react-bug-reporter-pro__upload-btn {
-    background-color: var(--primary-color-dark-2);
-    color: var(--text-color-3);
+    background-color: var(--rbrp-primary-color-dark-2);
+    color: var(--rbrp-text-color-3);
     font-weight: bold;
 }
 
-.react-bug-reporter-pro__donwload-btn {
-    background-color: var(--primary-color-dark-1);
-    color: var(--text-color-3);
+.react-bug-reporter-pro__download-btn {
+    background-color: var(--rbrp-primary-color-dark-1);
+    color: var(--rbrp-text-color-3);
     font-weight: bold;
-}
-
-@media (min-width: 1200px) {
-    .react-bug-reporter-pro__tools-container,
-    .react-bug-reporter-pro__modal-overlay {
-        font-size: 12px;
-    }
-}
-
-@media (min-width: 1400px) {
-    .react-bug-reporter-pro__tools-container,
-    .react-bug-reporter-pro__modal-overlay {
-        font-size: 14px;
-    }
-}
-
-@media (min-width: 1600px) {
-    .react-bug-reporter-pro__tools-container,
-    .react-bug-reporter-pro__modal-overlay {
-        font-size: 16px;
-    }
-}
-
-@media (min-width: 2000px) {
-    .react-bug-reporter-pro__tools-container,
-    .react-bug-reporter-pro__modal-overlay {
-        font-size: 18px;
-    }
-}
-
-@media (min-width: 2200px) {
-    .react-bug-reporter-pro__tools-container,
-    .react-bug-reporter-pro__modal-overlay {
-        font-size: 20px;
-    }
-}
-
-@media (min-width: 2400px) {
-    .react-bug-reporter-pro__tools-container,
-    .react-bug-reporter-pro__modal-overlay {
-        font-size: 22px;
-    }
-}
-
-@media (min-width: 2600px) {
-    .react-bug-reporter-pro__tools-container,
-    .react-bug-reporter-pro__modal-overlay {
-        font-size: 24px;
-    }
-}
-
-@media (min-width: 3000px) {
-    .react-bug-reporter-pro__tools-container,
-    .react-bug-reporter-pro__modal-overlay {
-        font-size: 26px;
-    }
-}
-
-@media (min-width: 3400px) {
-    .react-bug-reporter-pro__tools-container,
-    .react-bug-reporter-pro__modal-overlay {
-        font-size: 30px;
-    }
 }
