@@ -1,18 +1,14 @@
 import { useState, useRef } from 'react'
 
-interface UploadVideoParams<T> {
-    uploadUrl?: string
-    httpClient?: (fileEncoded: FormData) => Promise<T>
-    fileName?: string
-}
-
 interface UseScreenRecorderReturn {
     recording: boolean
-    videoUrl: string | null
+    localVideoUrl: string | null
     startRecording: (audioEnabled?: boolean) => void
-    stopRecording: () => void
-    uploadFile: <T>(params: UploadVideoParams<T>) => Promise<boolean | T>
-    downloadFile: (fileName?: string) => void
+    stopRecording: (fileName?: string) => void
+    downloadFile: () => void
+    uploadFile: <T>(
+        uploadRequestsFileCallback: <T>(fileEncoded: FormData) => Promise<T>
+    ) => Promise<T>
     revokeUrl: () => void
 }
 
@@ -21,7 +17,7 @@ interface UseScreenRecorderReturn {
  *
  * @returns {UseScreenRecorderReturn} - An object containing:
  * - `recording`: A boolean indicating if the recording is in progress.
- * - `videoUrl`: The URL of the recorded video, or null if not available.
+ * - `localVideoUrl`: The local URL of the recorded video to allow preview, or null if not available.
  * - `startRecording`: Function to start recording the screen.
  * - `stopRecording`: Function to stop the recording and save the video data.
  * - `uploadFile`: Function to upload the video file to a specified server URL or using a custom HTTP client.
@@ -31,10 +27,16 @@ interface UseScreenRecorderReturn {
 function useScreenRecorder(): UseScreenRecorderReturn {
     const [recording, setRecording] = useState(false)
     const [mediaStream, setMediaStream] = useState<MediaStream | null>(null)
-    const [videoUrl, setVideoUrl] = useState<string | null>(null)
+    const [localVideoUrl, setlocalVideoUrl] = useState<string | null>(null)
+    const [fileNameState, setFileNameState] = useState('')
+    const [blob, setBlob] = useState<Blob | null>(null)
+
     const mediaRecorderRef = useRef<MediaRecorder | null>(null)
     const recordedChunks = useRef<Blob[]>([])
-    const [blob, setBlob] = useState<Blob | null>(null)
+
+    const makeTimeStampedFileName = () => {
+        return `screen-record-${Date.now()}.webm`
+    }
 
     /**
      * Uploads the recorded video file to a specified URL or using a custom HTTP client.
@@ -47,62 +49,35 @@ function useScreenRecorder(): UseScreenRecorderReturn {
      * @returns {Promise<boolean | T>} - Returns true if the upload was successful or the result of the custom HTTP client.
      * @throws {Error} If there is no video recorded yet, or if the upload URL is missing when no HTTP client is provided.
      */
-    const uploadFile = async <T>({
-        uploadUrl,
-        httpClient,
-        fileName = `screen-record-${Date.now()}.webm`,
-    }: UploadVideoParams<T>): Promise<boolean | T> => {
+    const uploadFile = async <T>(
+        uploadRequestsFileCallback: <T>(fileEncoded: FormData) => Promise<T>
+    ): Promise<T> => {
         if (!blob) throw new Error('There is no video recorded yet')
-        if (!uploadUrl && !httpClient) throw new Error('Missing uploadUrl')
+        if (!uploadRequestsFileCallback) {
+            throw new Error('Missing upload callback')
+        }
 
         const formData = new FormData()
-        formData.append('file', blob, fileName)
-
-        if (httpClient) {
-            return httpClient(formData)
-        }
-
-        try {
-            const response = await fetch(uploadUrl!, {
-                method: 'POST',
-                body: formData,
-            })
-
-            if (!response.ok) {
-                throw new Error('Error uploading the video')
-            }
-
-            return true
-        } catch (error) {
-            console.error('Error uploading the video:', error)
-            return false
-        }
+        formData.append('file', blob, fileNameState)
+        return uploadRequestsFileCallback(formData)
     }
 
     /**
      * Downloads the recorded video file to the user's device.
      *
-     * @param {string} [fileName=`screen-record-${Date.now()}.webm`] - The name for the downloaded file.
      * @throws {Error} If there is no video URL available for download.
      */
-    const downloadFile = (fileName = `screen-record-${Date.now()}.webm`) => {
-        if (!videoUrl)
+    const downloadFile = () => {
+        if (!localVideoUrl) {
             throw new Error('There is no video URL available for download')
+        }
 
         const a = document.createElement('a')
         a.style.display = 'none'
-        a.href = videoUrl
-        a.download = fileName
+        a.href = localVideoUrl
+        a.download = fileNameState
         document.body.appendChild(a)
         a.click()
-    }
-
-    /**
-     * Revokes the current object URL of the recorded video, releasing associated memory.
-     */
-    const revokeUrl = () => {
-        if (!videoUrl) return
-        window.URL.revokeObjectURL(videoUrl)
     }
 
     /**
@@ -138,7 +113,7 @@ function useScreenRecorder(): UseScreenRecorderReturn {
                 setBlob(newBlob)
 
                 const url = URL.createObjectURL(newBlob)
-                setVideoUrl(url)
+                setlocalVideoUrl(url)
             }
 
             mediaRecorderRef.current.start()
@@ -151,21 +126,31 @@ function useScreenRecorder(): UseScreenRecorderReturn {
     /**
      * Stops the current screen recording and releases the media stream resources.
      */
-    const stopRecording = () => {
-        if (mediaRecorderRef.current) {
-            mediaRecorderRef.current.stop()
-            setRecording(false)
+    const stopRecording = (fileName = makeTimeStampedFileName()) => {
+        if (!mediaRecorderRef.current) return
 
-            if (mediaStream) {
-                mediaStream.getTracks().forEach((track) => track.stop())
-            }
-            setMediaStream(null)
+        mediaRecorderRef.current.stop()
+        setFileNameState(fileName)
+        setRecording(false)
+
+        if (mediaStream) {
+            mediaStream.getTracks().forEach((track) => track.stop())
         }
+
+        setMediaStream(null)
+    }
+
+    /**
+     * Revokes the current object URL of the recorded video, releasing associated memory.
+     */
+    const revokeUrl = () => {
+        if (!localVideoUrl) return
+        window.URL.revokeObjectURL(localVideoUrl)
     }
 
     return {
         recording,
-        videoUrl,
+        localVideoUrl,
         startRecording,
         stopRecording,
         uploadFile,

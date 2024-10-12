@@ -4,18 +4,14 @@ import {
     RequestResponseModel,
 } from 'browser-http-request-listener'
 
-interface UploadFileParams<T> {
-    uploadUrl?: string
-    httpClient?: (fileEncoded: FormData) => Promise<T>
-    fileName?: string
-}
-
 interface UseHttpRecorderReturn {
     recording: boolean
     startRecording: () => void
-    stopRecording: () => void
-    uploadFile: <T>(params: UploadFileParams<T>) => Promise<boolean | T>
-    downloadFile: (fileName?: string) => void
+    stopRecording: (fileName?: string) => void
+    downloadFile: () => void
+    uploadFile: <T>(
+        uploadRequestsFileCallback: <T>(fileEncoded: FormData) => Promise<T>
+    ) => Promise<T>
 }
 
 /**
@@ -25,20 +21,27 @@ interface UseHttpRecorderReturn {
  * - `recording`: A boolean indicating if the HTTP request recording is active.
  * - `startRecording`: Function to start recording HTTP requests.
  * - `stopRecording`: Function to stop recording and save the requests data.
- * - `uploadFile`: Function to upload the recorded HTTP log to a specified server URL.
+ * - `uploadFile`: Function to upload the recorded HTTP log using a callback function.
  * - `downloadFile`: Function to download the recorded HTTP log as a text file.
  */
 function useHttpRecorder(): UseHttpRecorderReturn {
     const [recording, setRecording] = useState(false)
     const [requests, setRequests] = useState<RequestResponseModel[]>([])
+    const [fileName, setFileName] = useState('')
     const [blob, setBlob] = useState<Blob | null>(null)
 
     const unblockListeningStateCallback = useRef<CallableFunction | null>(null)
 
+    const makeTimeStampedFileName = () => {
+        return `http-requests-log-${Date.now()}.txt`
+    }
+
     /**
      * Starts recording HTTP requests.
+     * Initializes the recording state and clears previous log data.
+     * Uses BrowserHttpRequestListener to start listening to HTTP requests.
      */
-    const startRecording = () => {
+    const startRecording = (): void => {
         if (recording) return
         BrowserHttpRequestListener.start()
         unblockListeningStateCallback.current =
@@ -50,58 +53,36 @@ function useHttpRecorder(): UseHttpRecorderReturn {
     }
 
     /**
-     * Uploads the recorded HTTP request log to a specified URL or using a custom HTTP client.
+     * Uploads the recorded HTTP request log using a specified callback function.
+     * Sends the recorded data in a FormData object, allowing flexibility for different server implementations.
      *
      * @template T
-     * @param {UploadFileParams<T>} params - An object containing:
-     *   - `uploadUrl` {string} - The URL to upload the file to (without auth).
-     *   - `httpClient` {function} - Optional custom HTTP client function if you need to handle auth.
-     *   - `fileName` {string} - Optional name for the uploaded file.
-     * @returns {Promise<boolean | T>} - Returns true if the upload was successful, or the return value from the custom HTTP client.
-     * @throws {Error} If there is no recorded data or if both `uploadUrl` and `httpClient` are not provided.
+     * @param {function(FormData): Promise<T>} uploadRequestsFileCallback - Callback function to handle the file upload.
+     * @returns {Promise<T>} - The response returned by the upload callback.
+     * @throws {Error} If there is no recorded data or the callback is not provided.
      */
-    const uploadFile = async <T>({
-        uploadUrl,
-        httpClient,
-        fileName = `http-requests-log-${Date.now()}.txt`,
-    }: UploadFileParams<T>): Promise<boolean | T> => {
+    const uploadFile = async <T>(
+        uploadRequestsFileCallback: <T>(fileEncoded: FormData) => Promise<T>
+    ): Promise<T> => {
         if (!blob) throw new Error('There is no requests recorded yet')
-        if (!uploadUrl && !httpClient)
-            throw new Error('Missing upload URL or HTTP client')
+        if (!uploadRequestsFileCallback) {
+            throw new Error('Missing upload callback')
+        }
 
         const formData = new FormData()
         formData.append('file', blob, fileName)
-
-        if (httpClient) {
-            return httpClient(formData)
-        }
-
-        try {
-            const response = await fetch(uploadUrl!, {
-                method: 'POST',
-                body: formData,
-            })
-
-            if (!response.ok) {
-                throw new Error('Error uploading the file')
-            }
-
-            return true
-        } catch (error) {
-            console.error('Error uploading the file:', error)
-            return false
-        }
+        return uploadRequestsFileCallback(formData)
     }
 
     /**
      * Downloads the recorded HTTP request log as a text file.
      *
-     * @param {string} [fileName=`http-requests-log-${Date.now()}.txt`] - The name for the downloaded file.
      * @throws {Error} If there is no recorded data available for download.
      */
-    const downloadFile = (fileName = `http-requests-log-${Date.now()}.txt`) => {
-        if (!blob)
+    const downloadFile = () => {
+        if (!blob) {
             throw new Error('There is no recorded data available for download')
+        }
 
         const url = URL.createObjectURL(blob)
 
@@ -115,14 +96,18 @@ function useHttpRecorder(): UseHttpRecorderReturn {
     }
 
     /**
-     * Stops recording HTTP requests and creates a Blob containing the recorded log data.
+     * Stops recording HTTP requests and saves the recorded log data.
+     * Ends the recording session and generates a timestamped filename if one is not provided.
+     *
+     * @param {string} [fileName] - Optional filename for the log file.
      */
-    const stopRecording = () => {
+    const stopRecording = (fileName?: string) => {
         if (!recording) return
 
         unblockListeningStateCallback.current?.()
         BrowserHttpRequestListener.stop()
         setRecording(false)
+        setFileName(fileName || makeTimeStampedFileName())
 
         if (requests.length > 0) {
             const fileContent = requests
@@ -139,7 +124,10 @@ function useHttpRecorder(): UseHttpRecorderReturn {
                 setRequests((prev) => [...prev, req])
             })
 
-        return httpReqListenerUnsubscriber
+        return () => {
+            unblockListeningStateCallback.current?.()
+            httpReqListenerUnsubscriber()
+        }
     }, [])
 
     return {
