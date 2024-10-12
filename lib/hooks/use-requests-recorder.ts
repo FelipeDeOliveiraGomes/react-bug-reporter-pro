@@ -101,13 +101,16 @@ function useHttpRecorder(): UseHttpRecorderReturn {
      *
      * @param {string} [fileName] - Optional filename for the log file.
      */
-    const stopRecording = (fileName = makeTimeStampedFileName()) => {
+    const stopRecording = (fileName?: string) => {
         if (!recording) return
 
         unblockListeningStateCallback.current?.()
         BrowserHttpRequestListener.stop()
+
+        if (fileName) fileName += '.txt'
+
         setRecording(false)
-        setFileNameState(fileName)
+        setFileNameState(fileName || makeTimeStampedFileName())
 
         if (requests.length > 0) {
             const fileContent = requests
