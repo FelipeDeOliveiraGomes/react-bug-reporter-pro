@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { FaBug } from 'react-icons/fa'
 import { PiRecordFill } from 'react-icons/pi'
 import { FaPause } from 'react-icons/fa6'
