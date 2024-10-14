@@ -1,13 +1,13 @@
 {
     "name": "react-bug-reporter-pro",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "type": "module",
     "main": "./dist/index.umd.js",
     "module": "./dist/index.es.js",
     "types": "./dist/index.d.ts",
     "repository": {
         "type": "git",
-        "url": "https://github.com/FelipeAnony/react-bug-reporter-pro"
+        "url": "git+https://github.com/FelipeAnony/react-bug-reporter-pro.git"
     },
     "files": [
         "dist"
