@@ -182,7 +182,7 @@ const myComponent: React.FC = () => {
 }
 ```
 
-**_useHttpRecorder_**
+**_useScreenRecorder_**
 
 This hook enables you to record the screen. Its API is quite similar to that of the HTTP logger hook.
 
