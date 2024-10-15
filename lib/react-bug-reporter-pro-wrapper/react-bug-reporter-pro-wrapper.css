@@ -109,7 +109,7 @@
 
 .react-bug-reporter-pro__modal {
     width: 100%;
-    height: 100%;
+    height: max-content;
     max-width: 32em;
     max-height: 36em;
     background-color: var(--rbrp-background-color-1);
@@ -139,7 +139,8 @@
 
 .react-bug-reporter-pro__text-area {
     width: 100%;
-    height: 100%;
+    height: 36rem;
+    max-height: 100%;
     resize: none;
     border: none;
     border-radius: var(--rbrp-border-radius-s);

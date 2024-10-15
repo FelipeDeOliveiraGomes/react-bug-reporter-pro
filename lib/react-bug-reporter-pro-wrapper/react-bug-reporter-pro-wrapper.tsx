@@ -61,8 +61,7 @@ const Timer: React.FC<{ initialTime: number; stop: boolean }> = ({
  * @template U - The type of the result from the video upload callback.
  *
  * @param {Object} props - The component props.
- * @param {string} props.description - A description of the bug being reported.
- * @param {React.Dispatch<React.SetStateAction<string>>} props.setDescription - Function to update the description state.
+ * @param {string} props.description - An optional description of the bug being reported.
  * @param {boolean} [props.closeModalAfterDownload=false] - If true, the modal will close after downloading files.
  * @param {boolean} [props.audioEnabled=false] - If true, audio recording will be enabled.
  * @param {string} [props.className] - Additional class names for styling.
@@ -83,7 +82,6 @@ const ReactBugReporterProWrapper: ReactBugReporterProWrapperType = ({
     customFileNames,
     audioEnabled,
     closeModalAfterDownload,
-    setDescription,
     onFileUploaded,
 }) => {
     const [modalIsOpen, setModalIsOpen] = useState(false)
@@ -117,7 +115,7 @@ const ReactBugReporterProWrapper: ReactBugReporterProWrapperType = ({
 
     const handleCloseModal = () => {
         screenRecorder.revokeUrl()
-        setDescription('')
+        description?.onValueChange('')
         setModalIsOpen(false)
     }
 
@@ -233,13 +231,15 @@ const ReactBugReporterProWrapper: ReactBugReporterProWrapperType = ({
                             controls
                         ></video>
 
-                        <textarea
-                            value={description}
-                            onChange={({ target }) =>
-                                setDescription(target.value)
-                            }
-                            className={concatClassnames('__text-area')}
-                        />
+                        {description ? (
+                            <textarea
+                                value={description?.value}
+                                onChange={({ target }) =>
+                                    description.onValueChange(target.value)
+                                }
+                                className={concatClassnames('__text-area')}
+                            />
+                        ) : null}
 
                         <div className={concatClassnames('__actions')}>
                             <button

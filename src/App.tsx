@@ -49,10 +49,12 @@ const App: React.FC = () => {
                 </div>
             </section>
             <ReactBugReporterProWrapper
-                description={description}
-                setDescription={setDescription}
                 allowDownloadFiles={true}
                 audioEnabled={true}
+                description={{
+                    onValueChange: setDescription,
+                    value: description,
+                }}
                 uploadFiles={{
                     uploadVideoCallback: () => Promise.resolve('Bar' as const),
                     uploadRequestFileCallback: () => {

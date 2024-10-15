@@ -13,11 +13,11 @@ interface OnFileUploadedParams<T, U> {
  * @template U - The type of the result from the video upload callback.
  */
 interface ReactBugReporterProWrapperProps<T, U> {
-    /** A description of the bug being reported. */
-    description: string
-
-    /** Function to update the description state. */
-    setDescription: React.Dispatch<React.SetStateAction<string>>
+    /** An optional description of the bug being reported. */
+    description?: {
+        value: string
+        onValueChange: (newValue: string) => void
+    }
 
     /** If true, the modal will close after downloading files. */
     closeModalAfterDownload?: boolean
