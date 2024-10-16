@@ -38,8 +38,10 @@ const MyComponent: React.FC = () => {
         <Foo>
             // ...any jsx you might have here
             <ReactBugReporterProWrapper
-                description={description}
-                setDescription={setDescription}
+                description={{
+                    value: yourDescriptionState,
+                    onValueChange: yourDescriptionStateSetter,
+                }}
                 allowDownloadFiles={true}
                 audioEnabled={true}
             />
@@ -62,8 +64,10 @@ const MyComponent: React.FC = () => {
         <Foo>
             // ...any other JSX code you might have here
             <ReactBugReporterProWrapper
-                description={description}
-                setDescription={setDescription}
+                description={{
+                    value: yourDescriptionState,
+                    onValueChange: yourDescriptionStateSetter,
+                }}
                 allowDownloadFiles={true}
                 audioEnabled={true}
                 uploadFiles={{
